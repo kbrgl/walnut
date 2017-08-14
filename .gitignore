@@ -1,0 +1,4 @@
+.DS_Store
+cmd/walnut/*.b
+cmd/walnut/walnut
+cmd/walnut/out.go
