@@ -29,7 +29,7 @@ func parse(tape []byte) <-chan item {
 }
 
 func (p *parser) run() {
-	for state := dispatcher; state != nil; state = state(p) {
+	for state := parseDefault; state != nil; state = state(p) {
 	}
 	close(p.items)
 }
@@ -69,7 +69,7 @@ func (p *parser) errorf(msg string) stateFn {
 	return nil
 }
 
-func dispatcher(p *parser) stateFn {
+func parseDefault(p *parser) stateFn {
 	var n int
 	for {
 		n = 1
@@ -128,19 +128,19 @@ func parseLoop(p *parser) stateFn {
 	}
 	p.emit(loopEnd{})
 	p.next()
-	return dispatcher
+	return parseDefault 
 }
 
 func parseWrite(p *parser) stateFn {
 	p.emit(write{})
 	p.next()
-	return dispatcher
+	return parseDefault
 }
 
 func parseRead(p *parser) stateFn {
 	p.emit(read{})
 	p.next()
-	return dispatcher
+	return parseDefault
 }
 
 func parsePrev(p *parser) stateFn {
@@ -149,7 +149,7 @@ func parsePrev(p *parser) stateFn {
 		n++
 	}
 	p.emit(prev{n})
-	return dispatcher
+	return parseDefault
 }
 
 func parseNext(p *parser) stateFn {
@@ -158,7 +158,7 @@ func parseNext(p *parser) stateFn {
 		n++
 	}
 	p.emit(next{n})
-	return dispatcher
+	return parseDefault
 }
 
 func parseSub(p *parser) stateFn {
@@ -167,7 +167,7 @@ func parseSub(p *parser) stateFn {
 		n++
 	}
 	p.emit(sub{n})
-	return dispatcher
+	return parseDefault
 }
 
 func parseAdd(p *parser) stateFn {
@@ -176,12 +176,12 @@ func parseAdd(p *parser) stateFn {
 		n++
 	}
 	p.emit(add{n})
-	return dispatcher
+	return parseDefault
 }
 
 func ignoreComment(p *parser) stateFn {
 	for r := p.next(); r != '\n' && r != eof; r = p.next() {
 	}
 	p.next()
-	return dispatcher
+	return parseDefault
 }
